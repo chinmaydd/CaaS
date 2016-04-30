@@ -1,0 +1,8 @@
+# Ignore db files
+*.db
+
+# Ignore Python bytecode
+*.pyc
+
+# Ignore text files
+*.txt
