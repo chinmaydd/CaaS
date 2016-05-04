@@ -1,0 +1,7 @@
+bottle == 0.12.9
+dropbox == 1.6
+hkdf == 0.0.3
+pickleDB == 0.6.2
+requests == 2.6.2
+yagmail == 0.4.127
+pycrypto == 2.6.1

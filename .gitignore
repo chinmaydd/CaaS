@@ -4,5 +4,3 @@
 # Ignore Python bytecode
 *.pyc
 
-# Ignore text files
-*.txt

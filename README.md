@@ -8,7 +8,9 @@ This project was developed as a part of our Web-Services(IT450) course.
 
 ## Usage
 
-* Clone the repository and register for an app on Dropbox and get an APPKEY and an APPSECRET. Add these to the `settings_template.py` file and rename it to `settings.py`.
+* Clone the repository and run `pip install -r requirements.txt`. 
+
+* Register for an app on Dropbox and get an APPKEY and an APPSECRET. Add these to the `settings_template.py` file and rename it to `settings.py`.
 
 * Register for a new Gmail account for your CaaS provider and add account information in `main.py`.
 
