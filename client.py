@@ -46,7 +46,7 @@ def prePush(path):
     f.close()
 
     # Upload to Dropbox
-    client = dropbox.client.DropboxClient(settings.ACCESS_TOKEN)
+    client = dropbox.Dropbox(settings.ACCESS_TOKEN)
     f = open('encrypted.txt', 'rb')
     response = client.put_file('/encrypted.txt', f)
     print "Uploaded: ", response
@@ -86,7 +86,7 @@ def configure():
     if settings.APP_SECRET == "INSERTAPPSECRET":
         print "Please configure APP_SECRET in settings.py"
         sys.exit(1)
-    flow = dropbox.client.DropboxOAuth2FlowNoRedirect(settings.APP_KEY, settings.APP_SECRET)
+    flow = dropbox.oauth.DropboxOAuth2FlowNoRedirect(settings.APP_KEY, settings.APP_SECRET)
     authorize_url = flow.start()
 
     print '1. Go to: ' + authorize_url
@@ -94,7 +94,12 @@ def configure():
     print '3. Copy the authorization code.'
     code = raw_input("Enter the authorization code here: ").strip()
 
-    access_token, user_id = flow.finish(code)
+    try:
+        access_token, user_id = flow.finish(code)
+    except:
+        print 'Error: %s' % (e,)
+        sys.exit(1)
+
     f = open('settings.py', 'w')
     f.write("ACCESS_TOKEN = \"" + str(access_token) + "\"\n")
     f.write("USER_ID = " + str(user_id))
