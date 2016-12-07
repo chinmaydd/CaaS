@@ -124,6 +124,8 @@ def main(docopt_args):
         url = raw_input("Enter Dropbox share link: ")
         originalMessage = postPull(url)
         print originalMessage
+    else:
+        print ("Usage: ./client.py [-hced]")    
 
 
 if __name__ == '__main__':
