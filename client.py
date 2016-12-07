@@ -1,3 +1,13 @@
+#!/usr/bin/python
+"""Usage: ./client.py [-hced]
+
+Options:
+  -h, --help        show this help message 
+  -c, --configure   Run first-time configuration
+  -e, --encrypt     Run the prePush sequence
+  -d, --decrypt     Run the postPull sequence
+
+"""
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import urllib2
@@ -6,10 +16,9 @@ import base64
 import requests
 import hashlib
 import dropbox
-import sys
 import ast
 import os
-
+from docopt import docopt
 
 def prePush(path):
     key = os.urandom(32)
@@ -105,21 +114,18 @@ def configure():
     f.write("USER_ID = " + str(user_id))
     f.close()
 
+def main(docopt_args):
+    if docopt_args['--configure']:
+        configure()
+        print "Configuration successful!"
+    elif docopt_args['--encrypt']:
+        prePush(raw_input("Enter file path: "))
+    elif docopt_args['--decrypt']:
+        url = raw_input("Enter Dropbox share link: ")
+        originalMessage = postPull(url)
+        print originalMessage
 
-if len(sys.argv) < 2:
-    print "Usage: ./client.py <option>"
-    print "Options:"
-    print "-c, --configure => Run first-time configuration"
-    print "-e, --encrypt => Run the prePush sequence"
-    print "-d, --decrypt => Run the postPull sequence"
-    sys.exit(1)
 
-if sys.argv[1] in ['-c', '--configure']:
-    configure()
-    print "Configuration successful!"
-elif sys.argv[1] in ['-e', '--encrypt']:
-    prePush(raw_input("Enter file path: "))
-elif sys.argv[1] in ['-d', '--decrypt']:
-    url = raw_input("Enter Dropbox share link: ")
-    originalMessage = postPull(url)
-    print originalMessage
+if __name__ == '__main__':
+    arguments = docopt(__doc__)
+    main(arguments)
