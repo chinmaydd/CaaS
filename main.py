@@ -4,16 +4,17 @@ import pdb
 import os
 
 # Used for generating a random 8 character sequence
-import random, string
+import random
+import string
 
-# Yet Another Gmail integration lib
+# Yet Another Gmail integration library
 import yagmail
 
 # Key value database
 import pickledb
 db = pickledb.load('storage.db', 'False')
 
-# Crypto <3
+# Cryptographic Libraries
 from Crypto.Cipher import AES
 import hashlib
 import hkdf
@@ -35,8 +36,8 @@ def user_exists(email_addr):
     else:
         return False
 
-# TODO: Handle cases where the user is already verified.
 # Function which verifies the user
+
 def verify_user(email_addr, secure_string):
     # Get value from the database
     val = db.get(email_addr)
@@ -51,7 +52,17 @@ def verify_user(email_addr, secure_string):
     else:
         return False
 
-# Function registers the user by adding data into the db and sending him a mail for authrntication via EBIA
+# TODO addressed: Handles cases where the user is already verified.
+def already_verified(email_addr):
+    # Get value from the database
+    val = db.get(email_addr)
+    # Check if the email address in the database has already been verified
+    if val['confirmed'] == True:
+        return True
+    else:
+        return False
+
+# Function registers the user by adding data into the db and sending them a mail for authrntication via EBIA
 def register_user(email_addr, password):
 
     # Create a random string of bytes to send the user via email.
@@ -80,14 +91,18 @@ def verify():
     try:
         email_addr = req['Email']
         secure_string = req['Secure_String']
-
-        if verify_user(email_addr, secure_string):
-            rv['Status'] = "Successful"
-            rv['Message'] = "You have been successfully verified"
-
+        
+        # Message is different for already verified accounts
+        if already_verified(email_addr):
+            rv['Status'] = "Already Verified"
+            rv['Message'] = "You have already been successfully verified"
         else:
-            rv['Status'] = "Unsuccessful"
-            rv['Error'] = "Verification failed"
+            if verify_user(email_addr, secure_string):
+                rv['Status'] = "Successful"
+                rv['Message'] = "You have been successfully verified"
+            else:
+                rv['Status'] = "Unsuccessful"
+                rv['Error'] = "Verification failed"
 
     except Exception as e:
         rv['Status'] = "Unsuccessful"
@@ -210,4 +225,4 @@ def decrypt():
     rv['dec_p'] = base64.b64encode(CaaS_decrypted_text)
     return rv
 
-run(host='localhost', port=8080)
+run(host='localhost', port=8080)s
