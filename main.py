@@ -26,9 +26,13 @@ import binascii
 # CaaS master key
 Xp = '00010011101111000000001010011101'
 
-# Function checks if the user already exists in the database and returns true if does, false otherwise
 def user_exists(email_addr):
-    val = db.get(email_addr)
+    """Checks if the user already exists in the database, return True if the entry exists, False otherwise
+    
+    Keyowrd arguments:
+    email_addr -- email address of the user
+    """
+    val = db.get(email_addr) # queries the user entry with the given email address from the database
 
     # Check return value of the query
     if val:
@@ -36,9 +40,16 @@ def user_exists(email_addr):
     else:
         return False
 
-# Function which verifies the user
-
 def verify_user(email_addr, secure_string):
+    """Verifies the user by checking whether the secure string sent to the user during registration is the same
+    as the one set in the database. This is done by querying the user entry with the given email address from 
+    the database. If yes, then the "confirmed" field present in the user entry is set to True and the modified
+    entry is saved onto the database and True is returned. If no, False is returned.
+    
+    Keyowrd arguments:
+    email_addr -- email address of the user
+    secure_string -- the secure string sent to the user at the time of registration  
+    """
     # Get value from the database
     val = db.get(email_addr)
     print val
@@ -54,6 +65,12 @@ def verify_user(email_addr, secure_string):
 
 # Function handles cases where the user is already verified.
 def already_verified(email_addr):
+    """Checks if the user has already been verified after registration. If "confirmed" field of the queried user
+    entry is equal to True, i.e., user has already been verified, return True, False otherwise
+    
+    Keyowrd arguments:
+    email_addr -- email address of the user
+    """
     # Get value from the database
     val = db.get(email_addr)
     # Check if the email address in the database has already been verified
@@ -62,25 +79,34 @@ def already_verified(email_addr):
     else:
         return False
 
-# Function registers the user by adding data into the db and sending them a mail for authrntication via EBIA
 def register_user(email_addr, password):
-
+    """Registers the user by adding data into the database and sending them a mail for authentication via EBIA.
+    A random secure_string is generated which will be added to the database along with the user's email and CaaS
+    password and sent to the user's email address which will be used in the verification process.
+    
+    Keyowrd arguments:
+    email_addr -- email address of the user
+    password -- CaaS Password
+    """
     # Create a random string of bytes to send the user via email.
     secure_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
     # Let us store passwords in plaintext
     db.set(email_addr, {'Password': password, 'confirmed': 'False','ids': [], 'Secure_String': secure_string})
 
-    # Send an email to the user
     # GMail Credentials for CaaS
     yag = yagmail.SMTP("email", "password")
     contents = ["Welcome to CaaS(Confidentiality as a Service Paradigm. Your secret key is " + secure_string + ". Please make a request to /verify with the request formatted as the following JSON: {'Email': email_address, 'Secure_String':secure_string}. If you are verified, you can then login into the CaaS service with the password you provided earlier."]
 
+    # Send an email to the user
     yag.send(email_addr, 'CaaS registration', contents)
 
 # Verification function
 @route('/verify', method="POST")
 def verify():
-
+    """Checks whether a user has been verified or not using the already_verified() method and returns appropriate
+    respones in the "Status" and "Messages" fields. If not verified, then the user is taken through the verification
+    process with verify_user(). Incase verification fails, the "Status" and "Message" fields are updated accordingly.
+    """
     # Parse the incoming JSON
     req = request.json
 
@@ -114,7 +140,9 @@ def verify():
 @route('/register', method="POST")
 def register():
     # pdb.set_trace()
-
+    """Checks wheather the given user's email address exists in the database. If yes, then the registration process 
+    is aborted and "Status" and "Message" fields are updated accordingly. If no, then register_user() is invoked.
+    """
     # Parse the incoming JSON
     req = request.json
     email_addr = req['Email']
