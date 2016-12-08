@@ -52,7 +52,7 @@ def verify_user(email_addr, secure_string):
     else:
         return False
 
-# TODO addressed: Handles cases where the user is already verified.
+# Function handles cases where the user is already verified.
 def already_verified(email_addr):
     # Get value from the database
     val = db.get(email_addr)
