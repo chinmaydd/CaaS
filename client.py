@@ -119,7 +119,8 @@ def main(docopt_args):
         configure()
         print "Configuration successful!"
     elif docopt_args['--encrypt']:
-        prePush(raw_input("Enter file path: "))
+        filepath = raw_input("Enter file path: ")
+        prePush(filepath)
     elif docopt_args['--decrypt']:
         url = raw_input("Enter Dropbox share link: ")
         originalMessage = postPull(url)
