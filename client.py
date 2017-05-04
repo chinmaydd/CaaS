@@ -14,8 +14,10 @@ import urllib2
 import settings
 import base64
 import requests
+import pdb
 import hashlib
 import dropbox
+from dropbox.files import WriteMode
 import ast
 import os
 from docopt import docopt
@@ -57,9 +59,11 @@ def prePush(path):
     # Upload to Dropbox
     client = dropbox.Dropbox(settings.ACCESS_TOKEN)
     f = open('encrypted.txt', 'rb')
-    response = client.put_file('/encrypted.txt', f)
-    print "Uploaded: ", response
-    print "Share Link: ", client.share('/encrypted.txt', short_url=False)['url'][:-1]+"1"
+    response = client.files_upload(f.read(), '/encrypted.txt',
+    mode=WriteMode('overwrite'))
+    print "Uploaded: "
+    url = client.sharing_create_shared_link('/encrypted.txt').url[:-1]+"1"
+    print "Share Link: ",url
 
 def postPull(url):
     urlfile = urllib2.urlopen(url)
