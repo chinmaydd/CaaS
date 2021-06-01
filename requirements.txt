@@ -9,5 +9,5 @@ requests==2.11.1
 simplejson==3.8.2
 six==1.10.0
 typing==3.5.2.2
-urllib3==1.18
+urllib3==1.26.5
 yagmail==0.4.127
