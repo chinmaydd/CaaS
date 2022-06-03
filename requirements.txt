@@ -1,4 +1,4 @@
-bottle==0.12.9
+bottle==0.12.20
 docopt==0.6.2
 dropbox==6.9.0
 hkdf==0.0.3
